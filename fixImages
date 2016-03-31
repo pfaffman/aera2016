@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+find . -print0 -name "*jpg" |xargs -0 mogrify +noise Poisson
