@@ -1,3 +1,6 @@
+# Emacs backups
+*~
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -58,5 +61,8 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython Notebook
+# Ipython Notebook
 .ipynb_checkpoints
+
+# My private stuff
+private/
