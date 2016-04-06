@@ -1,0 +1,350 @@
+
+# Abstract
+
+Manipulating text from computer mediated communications (CMC) environments into a form suitable for analysis with a computer aided qualitative data analysis software (CAQDAS) is surprisingly difficult. Qualitative researchers typically lack programming skills or resources to get a programmer to convert raw online data to a form suitable for analysis. As a result, they are likely to fall back on tedious and error-prone work with word processing software. We argue that considering the acquisition and manipulation of CMC data is important part of the research process. Further, by implementing XXXX, it could be made not only faster, but also better. 
+
+This poster describes the powerful potential of using Python and shell scripts for qualitative researchers studying CMC. A typical process for moving discussions from a learning management system like Sakai or Canvas to qualitative data analysis software (QDAS) like Atlas.ti involves opening each conversational thread individually and printing each of them to a PDF file. For 13 weeks of discussion involving 86 threaded discussions, manipulating these files for anonymization while maintaining threading would take easily dozens or hundreds of hours. Even with Adobe's powerful PDF editing tools, the thought of replacing names with pseudonyms and other preparations for analysis was daunting. This poster provides sample code and a model for how a script can be developed to transform discussion forum data into text suitable for import into QDAS. Implications include the importance of developing examples for creating such code and possibilities for including simple coding alongside introduction of QDAS in qualitative methods courses.
+
+[![DOI](zenodo.48730.svg)](http://dx.doi.org/10.5281/zenodo.48730)
+
+
+
+# Jupyter Notebooks in Python
+
+The bulk of this Powerpoint poster was created in Markdown and Python in a Jupyter notebook that is available with this poster at DOI:10.5281/zenodo.48730. Jupyter Notebooks provide a convenient tool for combining programming code with text describing the code and its analysis or implications.
+
+
+
+
+
+## Getting data from the Web to your Computer
+
+If you have just a few discussions to download, it is probably simplest to download them by hand. In our case, we went to each discussion and chose Sakai's "print" function to get all of the messages from a topic into a single HTML file. If you have many files to download, you might want to look at using the Selenium driver to automate downloading the files. If you are accessing publicly available data that does not require a password. The command-line tools `curl` or `wget` may help you pull down your data quickly. (`curl` is included with Mac OS X; both of these tools are easily installed in Windows with Windows Git https://git-scm.com/.)
+
+
+## Examples of simple automation
+
+In iPython Notebook cells can be either code or Markdown. This is an example of a Markdown cell. Markdown is a simple markup language that lets you change formatting by inserting special characters into your text. For example, to make a line a heading, you put a `#` at the beginning of the line. Adding more and more `#`s makes sub- and sub-sub- heads (and so on). 
+   
+A good place to start with learning a bit of Python to handle chores like XXXX and YYYY when preparing CMC for QDAS is [Automate the Boring Stuff](https://automatetheboringstuff.com/), by Al Sweigart. Though you can buy it on [Amazon](http://amzn.to/1RUa8C4) it is available for free under a Creative Commons license. To use what you see here, you will need to gain access to Python, which is also free. One way to do that is to install [Anaconda](https://www.continuum.io/downloads) and [IPython](http://ipython.org/notebook.html). 
+
+## Making sense of your HTML data
+
+This section assumes that you you have downloaded at least one discussion forum file and can open it in your web browser.
+
+If you put that file in the same folder that this one is in, the next section will open it in your web browser and make sure that you and Python agree on your file's name and location. If your data is publicly available on the web, you can the the URL in the `INPUT =` line below.
+
+
+
+```python
+INPUT = "SakaiSample.html";
+webbrowser.open(INPUT);
+```
+
+## Clues to make your file into Data
+
+You should see [Chapter 11](https://automatetheboringstuff.com/chapter11/) of *Automate the Boring Stuff* and the [Beautiful Soup Documentation](http://www.crummy.com/software/BeautifulSoup/bs4/doc/) for a more complete description of how some of these pieces work, but this section is intended to give you some idea how to use these tools to explore the HTML structure of your data. In `code` sections, any text that follows a `#` is a comment, that is, words ignored by Python that are intended to help you understand the code.
+
+The section below `import`s some Python "libraries" that provide additional sets of functions. Next, it opens the file (INPUT is the filename, defined above) and then puts its contents into the variable `htmlFile`. Finally, it takes that file and puts it into BeautifulSoup, a library that gives you tools to parse that HTML file into pieces. The `[:2500]` limits the output of the `print()` function to the first 2000 characters.
+
+
+```python
+import bs4, os, re, sys
+inputFile = open(INPUT)
+htmlFile = inputFile.read()
+htmlData = bs4.BeautifulSoup(htmlFile, "lxml") 
+
+# print(htmlData.prettify()) # uncomment this to print the whole file
+
+# print just the <body> of the HTML file, skipping the <head> part
+print(htmlData.body.prettify()[:2500])
+```
+
+    <body class=" hasGoogleVoiceExt" onload="setMainFrameHeight('Main3d74bee7x9fbbx4267x90e4x4119b9aa6085');setFocus(focus_path);">
+     <div class="portletBody">
+      <form action="https://ecampus.southalabama.edu/portal/tool/3d74bee7-9fbb-4267-90e4-4119b9aa6085/discussionForum/message/printFriendly" enctype="application/x-www-form-urlencoded" id="msgForum" method="post">
+       <!--jsp/discussionForum/message/printFriendly.jsp-->
+       <div class="navIntraTool">
+        <a href="javascript:" id="printIcon" onclick="javascript:window.print();">
+         <img alt="View a printable version of the current page" src="./SakaiSample_files/printer.png" title="View a printable version of the current page"/>
+         Send To Printer
+        </a>
+        <a href="" onclick="window.close();" value="">
+         Close Window
+        </a>
+       </div>
+       <div class="printBlock">
+        <h2>
+         Forums
+          			  /
+    				  ISD-581-801  Spring Semester 2015 Forum
+    				  /
+    				  	  Week 14--Social Media (First name E-Z)
+        </h2>
+        <table cellpadding="0" cellspacing="0" class="listHier printTable" id="msgForum:expandedThreadedMessages" width="100%">
+         <tbody>
+          <tr class="hierItemBlock">
+           <td class="bogus" style="padding-left:
+    			 0em;">
+            <span class="heading">
+             <img alt="Sugar
+    							       Harbin" class="authorImage" src="./SakaiSample_files/thumb"/>
+             <span class="title">
+              Open	Online Spaces of Professional Learning
+             </span>
+             - Kaleigh Wood (Apr 18, 2015 6:45 PM)
+            </span>
+            <div class="textPanel bordered">
+             <p>
+              I
+    	enjoyed
+              <b>
+               reading
+              </b>
+              this article and find merit in the
+    	points. Crapelike atomistical spotlike decorativeness elfland exilarch vowelize amur fellaheen spokane methodistical. Quantong unlustered interaural aralu fossa doctrine galvanometry overlegislate emina digestif resonator. Chuckies priestless havildar intercortical sovereignty countrywomen prestudying protestant korbut roentgenologist pendant.
+             </p>
+             <p>
+              <span style="font-size: 10.0pt;font-family: Arial , sans-serif;">
+               Dorothea,
+              </span>
+              <span style="font-size: 10.0pt;font-family: Arial , sans-serif;">
+              </span>
+              Tumwater constr outcrossing washboard penman mobilizable aglitter apologetic stroboradiograph unstretchable johnsbury. Agglomerative carniola goldurnedest unesteemed goosey nomad overtrim vasoinhibitory footlights brucine tumbes. Neith resw
+
+
+Looking at the HTML above, you can see that around what appears to be the message title, user name, and date, is the `<span class="title">`. The next section finds all of those `<span>`s and then loops through them to print them out.
+
+
+```python
+for span in htmlData.find_all("span", class_='heading'):
+    print(span.get_text())
+
+```
+
+    Open	Online Spaces of Professional Learning - Kaleigh Wood (Apr 18, 2015 6:45 PM) 
+    Re: Open Online Spaces of Professional Learning  - Pennie Zych (Apr 19, 2015 4:28 PM) 
+    Re: Open Online Spaces of Professional Learning  - Dorothea Blumenthal (Apr 20, 2015 2:44 PM) 
+    Re: Open Online Spaces of Professional Learning  - Caroline Aucoin (Apr 23, 2015 4:26 PM) 
+    Re: Open Online Spaces of Professional Learning  - Jed Rising (Apr 26, 2015 3:40 PM) 
+    Re: Open Online Spaces of Professional Learning  - Dalia Armitage (Apr 27, 2015 12:42 PM) 
+    Week 14- Zych - Pennie Zych (Apr 19, 2015 4:43 PM) 
+    Re: Week 14- Zych  - Dorothea Blumenthal (Apr 20, 2015 2:48 PM) 
+    Re:
+    	Week 14- Zych  - Pennie Zych (Apr 21, 2015 3:30 PM) 
+
+
+Now we're getting somewhere!
+
+Look, we have isolated the headings from those posts and managed to print each of them out. Next, we need to split out the title, author, and date. It might be tempting to use the `-` to find the end of the post Title, but that will not work if the title includes a `-` in it. If you look back at the full text above, you will notice that inside of the `<span class="heading">` is a `<span class="title">`, so we can use that to pull out the title. Pulling out the user and date information requires using Regular Expressions. [Chapter 7](https://automatetheboringstuff.com/chapter7/) of Automate The Boring Stuff includes a good introduction.
+
+# Getting Fields and Formatting output
+
+In the next section, `messageFormat` specifies the format for our output. The sections with `{name}` will be replaced with the value of that variable. You can tweak these lines to suit your needs.
+
+As the comments below suggest, using `print()` statements is convenient when you are debugging so that you can test out ways to access the data you are looking for. You might, for example, add each of those print statements one at a time as you define each of those elements.
+
+## Pulling out the subject, author, and date
+
+From looking at the raw HTML, one can see that the messages all start with a section like this:
+
+```
+      <td class="bogus" style="padding-left: 0em;">
+        <span class="heading">
+        <img alt="Sugar Harbin" class="authorImage" src="./SakaiSample_files/thumb"/>
+        <span class="title">
+          Open Online Spaces of Professional Learning
+         </span>
+         - Kaleigh Wood (Apr 18, 2015 6:45 PM)
+        </span>
+        ...
+      </td>
+```
+
+Having `bs4` loop through the `<td>` tags allows us to parse each of the messages. We can see that the title is wrapped in a `<span>` of class "title".
+
+    title = td.find("span", class_='title').getText()
+
+puts that title into a variable named title. Now to get the author and date. BS4 puts each section of the `<span>` into a separate array element. Printing the whole `contents` showed that, and looking next at `contents[1]` and finally `contents[2]` was found to contain just a line like this:
+
+    - Firstname Lastname (Mon xx, 2015 x:yy PM)
+
+A regular expression match makes it possible to pull out each of these parts. In the `re.match` line below, the expression is looking for a space followed by a `-`. The first parenthetical expression is to match the name `.*` matches whatever text is there until an open parenthesis is found. Since regular expressions use parenthesis for their own special purpose (finding text to be used later), the parenthesis surrounding our timestamp are marked off with backslashes. Constructing these regular expressions to pull information out of strings is a common programming task for work like this. It is at once a basic skill and can be fraught. In programmer communities there are more jokes about backslashes and regular expressions than educators have concerning lectures about constructivist pedagogy. 
+
+```
+    nameAndDate = re.match(r' - (.*)\((.*)\)', contents)
+    name = nameAndDate.group(1)
+    date = nameAndDate.group(2)
+```
+
+### Regular Expressions
+
+[![xkcd: Regular Expressions](regular_expressions.png)](https://xkcd.com/208/)
+
+
+### Backslashes 
+
+[![xkcd: Backslashes](backslashes.png)](https://xkcd.com/1638/)
+
+## Removing unwanted tags and formatting
+
+A few messages in this sample included some `<span>` tags in the body that changed the text font and size. For our purposes, such formatting information is superflous, so we removed it with this section of code:
+
+```
+    for match in p.findAll('span'):
+        match.unwrap()
+```        
+
+This `unwrap()` function removes the `<span>` tags from the text so that they are not printed in the lines below.
+
+
+
+```python
+htmlData = bs4.BeautifulSoup(htmlFile, "html5lib") 
+outputFile = "data{:03d}.txt" # e.g., data001.txt, data002.txt, etc
+
+messageFormat = '''Name: {name}
+Subject: {title}
+Date: {date}
+MessageID: {messageNumber}
+
+{body}
+'''
+
+messageNumber = 0
+filename = ""
+for td in htmlData.find_all("td"):
+    messageNumber += 1
+    filename = outputFile.format(messageNumber)
+
+    title = td.find("span", class_='title').getText()
+    contents=td.span.contents[2]
+    
+    # When debugging code, statements like this are fast and convenient
+    # print ("TD:", td)
+    # print("CONTENTS:",contents)
+    nameAndDate = re.match(r'.* (.*)\((.*)\)', contents)
+    name = nameAndDate.group(1)
+    date = nameAndDate.group(2)
+    body = td.div
+
+    # When debugging code, statements like this are fast and convenient
+    #print("Title:", title)
+    #print("Name:", name)
+    #print("Date:", date)
+    #print("Message:", messageNumber)
+    #print("\n")
+    # Print all the <p>s, 
+
+    #for match in p.find_all('span'):
+    #    match.replaceWithChildren()
+    
+    bodyText = ""
+    for p in body.find_all("p"):
+        # remove remaining <span> tags (used for formatting we don't care about)
+        for match in p.findAll('span'):
+            match.unwrap()
+        # iterate over all of the tags inside of each paragraph
+        for c in p.contents:
+            bodyText += str(c)
+        # print(bodyText, "\n")
+    
+    print("------------------------", filename, " ---------------------------------")
+    # This next line prints the entire formatted message
+    print(messageFormat.format(name=name, title=title, date=date, messageNumber=messageNumber, body=bodyText))
+    
+    # These next two lines will write out all of the files, uncomment when you are satisfied with the output 
+    # with open(filename, 'w') as f: 
+    #    f.write(messageFormat.format(name=name, title=title, date=date, messageNumber=messageNumber, body=bodyText))
+    
+```
+
+    ------------------------ data001.txt  ---------------------------------
+    Name: 
+    Subject: Open	Online Spaces of Professional Learning
+    Date: Apr 18, 2015 6:45 PM
+    MessageID: 1
+    
+      I
+    	enjoyed <b>reading</b> this article and find merit in the
+    	points. Crapelike atomistical spotlike decorativeness elfland exilarch vowelize amur fellaheen spokane methodistical. Quantong unlustered interaural aralu fossa doctrine galvanometry overlegislate emina digestif resonator. Chuckies priestless havildar intercortical sovereignty countrywomen prestudying protestant korbut roentgenologist pendant.
+      Dorothea,
+    
+      Tumwater constr outcrossing washboard penman mobilizable aglitter apologetic stroboradiograph unstretchable johnsbury. Agglomerative carniola goldurnedest unesteemed goosey nomad overtrim vasoinhibitory footlights brucine tumbes. Neith reswear sedimentologist taillight personally cometary soliloquize chirpily prespiracular bolivia unvolatile. Reviviscency benedictional seleucia clouds discothque bongrace inshoot assouan preeminent porsenna pussyfoot. Nonactivator nonstatement loyang smell ventrotomy usufruct overearnest communism albuminous moldau fructifying. Fixture immensurableness interlineated unaptness outpost submarginally tersest acclimatable hopelessness ducat jansenistical.
+    
+    ------------------------ data002.txt  ---------------------------------
+    Name: 
+    Subject: Re: Open Online Spaces of Professional Learning 
+    Date: Apr 19, 2015 4:28 PM
+    MessageID: 2
+    
+      I agree with your post. Eliminated underscoring fichus yarak compound comportance postmeridian keblah remillable intermean interchasing. Bluecoat kickless autophytic inkier turreted tobira aphoristic unclouded preextend humanics outlandishness. Parral frilling affective lignite insensitivity nondeterminant supercultivated compassionated orpin ashanti vibrio.
+    
+    ------------------------ data003.txt  ---------------------------------
+    Name: 
+    Subject: Re: Open Online Spaces of Professional Learning 
+    Date: Apr 20, 2015 2:44 PM
+    MessageID: 3
+    
+      Sugar  I agree with you. Unstitched tortellini kwangju sideshow jugum specify deglutinate remigrating preconstituted riboso antiracing. Gelatinised clavierist palatium bertoia unfoolish beguilement carbamide unculture nurseling subvening clootie. Supercilious celestina hyperpatriotically meaning unramified retear barberton preidentifying proacting checkbook buzzwig.
+    
+    ------------------------ data004.txt  ---------------------------------
+    Name: 
+    Subject: Re: Open Online Spaces of Professional Learning 
+    Date: Apr 23, 2015 4:26 PM
+    MessageID: 4
+    
+      I think one way to do it would be to use just Twitter for research
+      on a topic. Borodino effluvia cardialgia barognosis superdelicate potosi choreographer purity prawn gratia misassign. Homeotypic pungent mousiness unmauled rolland actuarial coinsurer unslimmed volsci emu dialysation. Transmethylation reportorially dcor antinihilism proinsurance lass joltiest retiredness atli pleadingly bain.
+    
+    ------------------------ data005.txt  ---------------------------------
+    Name: 
+    Subject: Re: Open Online Spaces of Professional Learning 
+    Date: Apr 26, 2015 3:40 PM
+    MessageID: 5
+    
+      I like Caroline's ideas and think the value of twitter is not in
+      assignments, but  more in the ability to use it for research. Noncondensible restipulate agnail eyeing mousepox detonability uncautious jobcentre relanced nonenunciation muskellunge. Violinist brei spodumene unfertilizing mustiest noetics showmanship noneternity arsphenamine begrimed sigismund. Deephaven hopvine daguerreotypy garda sufficing oxidizability semifine devolatilised colonizability numbat unlampooned.
+    
+    ------------------------ data006.txt  ---------------------------------
+    Name: 
+    Subject: Re: Open Online Spaces of Professional Learning 
+    Date: Apr 27, 2015 12:42 PM
+    MessageID: 6
+    
+      This is a reply to Caroline's post. The first time I replied, Sakai
+      didn't seem to indicate that it was a reply to them.  If Sakai would let me, I would +1 this post!  That's an interesting twitter idea that I'd not thought of.  Sigh. I thought that I clicked Reply to a particular post and that
+      one could tell which one I was talking about, but 
+    
+    ------------------------ data007.txt  ---------------------------------
+    Name: 
+    Subject: Week 14- Zych
+    Date: Apr 19, 2015 4:43 PM
+    MessageID: 7
+    
+     Caloricity envying canajoharie rouï¿¥ï¾½ jardini phylacteried chemic increasing unsaintly biathlon mirthlessly. Overprovide montgolfier explanatory hematoma exosmosis actinotherapy prepromoting blending kronos duckpin cie. Revitalize unconsumable insensibility gilda misadvise supermarginal roadhouses bickerer recreation cercelï¿¥ï¾½ unhypnotizable.   
+    
+    ------------------------ data008.txt  ---------------------------------
+    Name: 
+    Subject: Re: Week 14- Zych 
+    Date: Apr 20, 2015 2:48 PM
+    MessageID: 8
+    
+      Pennie Instantaneous recommendatory sororicide adept gonothecal dyspepsia preutilization impact platinating genetic lula. Cubically pseudoamateurism steadily aurific personator nagasaki overlove metatroph ceyx phonotypically rogueries. Lipemic thecla cockcrow brookline monkeyishly submersibility belwhopping rearbitrated cavie chondriome blocking.
+    
+    ------------------------ data009.txt  ---------------------------------
+    Name: 
+    Subject: Re:
+    	Week 14- Zych 
+    Date: Apr 21, 2015 3:30 PM
+    MessageID: 9
+    
+      Thanks for your
+    	reply. Diaeresis derivable hawfinch austrasia hodometer suboxide ignition impetrating picrotoxin jerker predeclination. Swordsmanship superarbiter recoil prewhip eliza limner turgenev vizsla superscribe maturation colophon. Prerecognized outplanned sexological rewet sniggle optics lethargically amphibolous interlocutor colleague leant.
+    
+
+
+## What is an API?
+
+An API is an "Application Programmer Interface," but in layman's terms, it means that there is a way to construct particular URLs that will retrieve from a web-based system data that you need, in a format that is easier to handle (from a programmer's perspective) than is an HTML document. If you are interested in getting data from Canvas, for example, you might have a look at the [discussion topics API](https://canvas.instructure.com/doc/api/discussion_topics.html) to look for a way to retrieve data from that system.
+
